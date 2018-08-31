@@ -5,6 +5,8 @@ import {withStyles} from '@material-ui/core/styles';
 import withWidth from '@material-ui/core/withWidth';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import getImages from './api/getImages';
 
 const styles = theme => ({
   root: {
@@ -20,27 +22,25 @@ const styles = theme => ({
   subheader: {
     width: '100%',
   },
+  progress: {
+    margin: theme.spacing.unit * 2,
+  },
 });
-
-type image = {
-  key: number | string,
-  url: string,
-  caption: string,
-  altText?: string,
-  cols?: number,
-};
 
 type Props = {
   classes: {
     root: {},
     gridList: {},
     subheader: {},
+    progress: {
+      margin: number,
+    },
   },
   +width: 'xs' | 'sm' | 'md' | 'lg' | 'xl',
 };
 
 type State = {
-  tiles: Array<image>,
+  renderedTiles: Array<Object>,
   +columnsRender: {
     xs: number,
     sm: number,
@@ -48,18 +48,14 @@ type State = {
     lg: number,
     xl: number,
   },
+  loading: boolean,
 };
 
 class PhotoGallery extends Component<Props, State> {
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
     this.state = {
-      tiles: Array.from(Array(20), (_, x) => ({
-        key: x,
-        url: 'https://source.unsplash.com/random/?nature,water',
-        caption: 'nature',
-        altTest: 'nature',
-      })),
+      renderedTiles: [],
       columnsRender: {
         xs: 1,
         sm: 2,
@@ -67,22 +63,35 @@ class PhotoGallery extends Component<Props, State> {
         lg: 4,
         xl: 5,
       },
+      loading: true,
     };
+  }
+
+  componentDidMount() {
+    setTimeout(() => {
+      const images = getImages();
+      const renderedTiles = images.map((tile, i) => (
+        <GridListTile key={tile.key} cols={tile.cols || 1}>
+          <img src={tile.url} alt={tile.altText || tile.caption} />
+        </GridListTile>
+      ));
+      this.setState({loading: false, renderedTiles});
+    }, 1500);
   }
 
   render() {
     const {classes, width} = this.props;
-    const {tiles, columnsRender} = this.state;
+    const {columnsRender, loading, renderedTiles} = this.state;
 
     return (
       <div className={classes.root}>
-        <GridList className={classes.gridList} cols={columnsRender[width]}>
-          {tiles.map(tile => (
-            <GridListTile key={tile.key} cols={tile.cols || 1}>
-              <img src={tile.url} alt={tile.caption} />
-            </GridListTile>
-          ))}
-        </GridList>
+        {loading ? (
+          <CircularProgress className={classes.progress} />
+        ) : (
+          <GridList className={classes.gridList} cols={columnsRender[width]}>
+            {renderedTiles}
+          </GridList>
+        )}
       </div>
     );
   }
