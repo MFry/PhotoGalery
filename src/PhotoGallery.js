@@ -49,6 +49,7 @@ type State = {
     xl: number,
   },
   loading: boolean,
+  modalOpen: boolean,
 };
 
 class PhotoGallery extends Component<Props, State> {
@@ -64,13 +65,14 @@ class PhotoGallery extends Component<Props, State> {
         xl: 5,
       },
       loading: true,
+      modalOpen: false,
     };
   }
 
   componentDidMount() {
     setTimeout(() => {
       const images = getImages();
-      const renderedTiles = images.map((tile, i) => (
+      const renderedTiles = images.map(tile => (
         <GridListTile key={tile.key} cols={tile.cols || 1}>
           <img src={tile.url} alt={tile.altText || tile.caption} />
         </GridListTile>
@@ -78,6 +80,10 @@ class PhotoGallery extends Component<Props, State> {
       this.setState({loading: false, renderedTiles});
     }, 1500);
   }
+
+  handleCloseModal = () => {
+    this.setState({modalOpen: false});
+  };
 
   render() {
     const {classes, width} = this.props;
