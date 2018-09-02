@@ -21,7 +21,12 @@ const Lightbox = ({imageData, open, handleClose}: Props) => {
       aria-labelledby={`Full page view of image ${imageData.altText}`}
       aria-describedby="Full page modal view of specific image with transition capability"
       open={open}
-      onClose={handleClose}>
+      onClose={handleClose}
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}>
       <div>
         <Image {...imageData} />
       </div>
