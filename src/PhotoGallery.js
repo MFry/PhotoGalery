@@ -94,7 +94,6 @@ class PhotoGallery extends Component<Props, State> {
   }
 
   handleOpenModal = (e, tile, i) => {
-    console.log(e.target, tile, i);
     this.setState({
       modalData: {imageData: tile, position: i},
       modalOpen: true,
@@ -114,7 +113,6 @@ class PhotoGallery extends Component<Props, State> {
       modalOpen,
       modalData,
     } = this.state;
-    console.log(this.state);
     return (
       <div className={classes.root}>
         {modalOpen ? (
