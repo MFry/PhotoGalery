@@ -53,9 +53,10 @@ type State = {
   loading: boolean,
   modalOpen: boolean,
   modalData: {
-    tile: image,
+    imageData: image | {},
     position: number,
   },
+  tiles: Array<image>,
 };
 
 class PhotoGallery extends Component<Props, State> {
@@ -73,6 +74,7 @@ class PhotoGallery extends Component<Props, State> {
       loading: true,
       modalOpen: false,
       modalData: {imageData: {}, position: -1},
+      tiles: [],
     };
   }
 
@@ -89,7 +91,7 @@ class PhotoGallery extends Component<Props, State> {
           <img src={tile.url} alt={tile.altText || tile.caption} />
         </GridListTile>
       ));
-      this.setState({loading: false, renderedTiles});
+      this.setState({loading: false, renderedTiles, tiles: images});
     }, 1500);
   }
 
@@ -102,6 +104,28 @@ class PhotoGallery extends Component<Props, State> {
 
   handleCloseModal = () => {
     this.setState({modalOpen: false});
+  };
+
+  handleModalNext = () => {
+    const {
+      modalData: {position},
+      tiles,
+    } = this.state;
+    const newPosition = position + 1 >= tiles.length ? 0 : position + 1;
+    this.setState({
+      modalData: {imageData: tiles[newPosition], position: newPosition},
+    });
+  };
+
+  handleModalPrev = () => {
+    const {
+      modalData: {position},
+      tiles,
+    } = this.state;
+    const newPosition = position - 1 < 0 ? tiles.length - 1 : position - 1;
+    this.setState({
+      modalData: {imageData: tiles[newPosition], position: newPosition},
+    });
   };
 
   render() {
@@ -120,6 +144,8 @@ class PhotoGallery extends Component<Props, State> {
             imageData={modalData.imageData}
             open={modalOpen}
             handleClose={this.handleCloseModal}
+            handlePrev={this.handleModalPrev}
+            handleNext={this.handleModalNext}
           />
         ) : (
           ''
