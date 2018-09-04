@@ -8,6 +8,7 @@ import GridListTile from '@material-ui/core/GridListTile';
 import GridListTileBar from '@material-ui/core/GridListTileBar';
 import orange from '@material-ui/core/colors/orange';
 import _ from 'lodash';
+import Swipe from 'react-swipe-component';
 import classNames from 'classnames';
 import {ChevronLeft, ChevronRight} from '@material-ui/icons';
 import type {image} from './api/getImages';
@@ -72,7 +73,7 @@ const Lightbox = ({
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-      <div>
+      <Swipe onSwipeLeft={() => handlePrev()} onSwipeRight={() => handleNext()}>
         <GridListTile>
           <Image {...imageData} />
           <GridListTileBar style={{height: '15%'}} title={imageData.caption} />
@@ -92,7 +93,7 @@ const Lightbox = ({
           onClick={() => handleNext()}>
           <ChevronRight />
         </IconButton>
-      </div>
+      </Swipe>
     </Modal>
   );
 };
