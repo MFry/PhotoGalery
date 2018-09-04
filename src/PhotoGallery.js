@@ -6,6 +6,7 @@ import withWidth from '@material-ui/core/withWidth';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 import Lightbox from './Lightbox';
 import getImages from './api/getImages';
 import type {image} from './api/getImages';
@@ -137,6 +138,13 @@ class PhotoGallery extends Component<Props, State> {
       modalOpen,
       modalData,
     } = this.state;
+    if (loading) {
+      return (
+        <div className={classes.root}>
+          <CircularProgress className={classes.progress} />
+        </div>
+      );
+    }
     return (
       <div className={classes.root}>
         {modalOpen ? (
@@ -150,8 +158,8 @@ class PhotoGallery extends Component<Props, State> {
         ) : (
           ''
         )}
-        {loading ? (
-          <CircularProgress className={classes.progress} />
+        {renderedTiles.length === 0 ? (
+          <Typography> No images were loaded. </Typography>
         ) : (
           <GridList className={classes.gridList} cols={columnsRender[width]}>
             {renderedTiles}
