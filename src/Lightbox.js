@@ -4,6 +4,8 @@ import React from 'react';
 import {withStyles, createMuiTheme} from '@material-ui/core/styles';
 import Modal from '@material-ui/core/Modal';
 import IconButton from '@material-ui/core/IconButton';
+import GridListTile from '@material-ui/core/GridListTile';
+import GridListTileBar from '@material-ui/core/GridListTileBar';
 import orange from '@material-ui/core/colors/orange';
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -71,7 +73,11 @@ const Lightbox = ({
         justifyContent: 'center',
       }}>
       <div>
-        <Image {...imageData} />
+        <GridListTile>
+          <Image {...imageData} />
+          <GridListTileBar style={{height: '15%'}} title={imageData.caption} />
+        </GridListTile>
+
         <IconButton
           color="secondary"
           aria-label="Go to previous picture"
