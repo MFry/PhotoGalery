@@ -1,7 +1,18 @@
+// @flow
 import React from 'react';
 
-const Image = ({url, altText, caption}) => (
-  <img src={url} alt={altText || caption} />
+type Props = {
+  url: string,
+  altText: string,
+  caption: string,
+};
+
+const Image = ({url, altText, caption}: Props) => (
+  <img
+    src={url}
+    alt={altText || caption}
+    style={{maxHeight: '100vh', maxWidth: '100vw'}}
+  />
 );
 
 export default Image;

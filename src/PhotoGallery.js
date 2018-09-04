@@ -6,7 +6,10 @@ import withWidth from '@material-ui/core/withWidth';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Lightbox from './Lightbox';
 import getImages from './api/getImages';
+import type {image} from './api/getImages';
 
 const styles = theme => ({
   root: {
@@ -18,7 +21,6 @@ const styles = theme => ({
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
-  gridList: {},
   subheader: {
     width: '100%',
   },
@@ -30,7 +32,6 @@ const styles = theme => ({
 type Props = {
   classes: {
     root: {},
-    gridList: {},
     subheader: {},
     progress: {
       margin: number,
@@ -50,6 +51,11 @@ type State = {
   },
   loading: boolean,
   modalOpen: boolean,
+  modalData: {
+    imageData: image | {},
+    position: number,
+  },
+  tiles: Array<image>,
 };
 
 class PhotoGallery extends Component<Props, State> {
@@ -66,33 +72,96 @@ class PhotoGallery extends Component<Props, State> {
       },
       loading: true,
       modalOpen: false,
+      modalData: {imageData: {}, position: -1},
+      tiles: [],
     };
   }
 
   componentDidMount() {
     setTimeout(() => {
       const images = getImages();
-      const renderedTiles = images.map(tile => (
-        <GridListTile key={tile.key} cols={tile.cols || 1}>
-          <img src={tile.url} alt={tile.altText || tile.caption} />
+      const renderedTiles = images.map((tile, i) => (
+        <GridListTile
+          key={tile.key}
+          cols={tile.cols || 1}
+          onClick={e => {
+            this.handleOpenModal(e, tile, i);
+          }}>
+          <img
+            style={{cursor: 'pointer'}}
+            src={tile.url}
+            alt={tile.altText || tile.caption}
+          />
         </GridListTile>
       ));
-      this.setState({loading: false, renderedTiles});
+      this.setState({loading: false, renderedTiles, tiles: images});
     }, 1500);
   }
+
+  handleOpenModal = (e, tile, i) => {
+    this.setState({
+      modalData: {imageData: tile, position: i},
+      modalOpen: true,
+    });
+  };
 
   handleCloseModal = () => {
     this.setState({modalOpen: false});
   };
 
+  handleModalNext = () => {
+    const {
+      modalData: {position},
+      tiles,
+    } = this.state;
+    const newPosition = position + 1 >= tiles.length ? 0 : position + 1;
+    this.setState({
+      modalData: {imageData: tiles[newPosition], position: newPosition},
+    });
+  };
+
+  handleModalPrev = () => {
+    const {
+      modalData: {position},
+      tiles,
+    } = this.state;
+    const newPosition = position - 1 < 0 ? tiles.length - 1 : position - 1;
+    this.setState({
+      modalData: {imageData: tiles[newPosition], position: newPosition},
+    });
+  };
+
   render() {
     const {classes, width} = this.props;
-    const {columnsRender, loading, renderedTiles} = this.state;
-
+    const {
+      columnsRender,
+      loading,
+      renderedTiles,
+      modalOpen,
+      modalData,
+    } = this.state;
+    if (loading) {
+      return (
+        <div className={classes.root}>
+          <CircularProgress className={classes.progress} />
+        </div>
+      );
+    }
     return (
       <div className={classes.root}>
-        {loading ? (
-          <CircularProgress className={classes.progress} />
+        {modalOpen ? (
+          <Lightbox
+            imageData={modalData.imageData}
+            open={modalOpen}
+            handleClose={this.handleCloseModal}
+            handlePrev={this.handleModalPrev}
+            handleNext={this.handleModalNext}
+          />
+        ) : (
+          ''
+        )}
+        {renderedTiles.length === 0 ? (
+          <Typography> No images were loaded. </Typography>
         ) : (
           <GridList className={classes.gridList} cols={columnsRender[width]}>
             {renderedTiles}
