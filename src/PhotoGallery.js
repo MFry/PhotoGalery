@@ -21,7 +21,6 @@ const styles = theme => ({
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
-  gridList: {},
   subheader: {
     width: '100%',
   },
@@ -33,7 +32,6 @@ const styles = theme => ({
 type Props = {
   classes: {
     root: {},
-    gridList: {},
     subheader: {},
     progress: {
       margin: number,
@@ -89,7 +87,11 @@ class PhotoGallery extends Component<Props, State> {
           onClick={e => {
             this.handleOpenModal(e, tile, i);
           }}>
-          <img src={tile.url} alt={tile.altText || tile.caption} />
+          <img
+            style={{cursor: 'pointer'}}
+            src={tile.url}
+            alt={tile.altText || tile.caption}
+          />
         </GridListTile>
       ));
       this.setState({loading: false, renderedTiles, tiles: images});
